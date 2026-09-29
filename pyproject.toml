@@ -1,0 +1,31 @@
+[project]
+name = "h2-plasma-size-ch4-conversion"
+version = "1.0.0"
+description = "Data and code for: Size of a hydrogen plasma controls methane conversion in its afterglow"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Martijn Daan Ruijzendaal", email = "martijn.ruijzendaal@maastrichtuniversity.nl" }]
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "cantera==3.2.0",
+    "matplotlib==3.10.8",
+    "numpy==2.4.3",
+    "pandas==3.0.1",
+    "pyyaml==6.0.3",
+    "scipy==1.17.0",
+    "tqdm",
+    "wedme-plots==2.0.6",
+    "yamlcore==0.0.4",
+]
+
+[dependency-groups]
+dev = ["ipykernel"]
+# Only for the scripts in processing/, which read the original spreadsheets and pickles
+processing = ["openpyxl", "toddler==0.1.1", "lmfit==1.3.4"]
+
+[build-system]
+requires = ["uv_build>=0.9,<0.10"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "h2_plasma_size"

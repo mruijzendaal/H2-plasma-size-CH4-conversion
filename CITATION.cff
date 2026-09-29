@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use this data or software, please cite both the dataset and the article."
+title: "Data and code for: Size of a hydrogen plasma controls methane conversion in its afterglow"
+type: dataset
+authors:
+  - family-names: Ruijzendaal
+    given-names: Martijn Daan
+    orcid: "https://orcid.org/0009-0008-1124-1420"
+    affiliation: "Circular Chemical Engineering, Maastricht University"
+license: MIT
+version: "1.0.0"
+# doi: add the Zenodo concept DOI here after the first release
+repository-code: "https://github.com/mruijzendaal/H2-plasma-size-CH4-conversion"
+keywords:
+  - methane conversion
+  - hydrogen plasma
+  - microwave plasma
+  - argon dilution
+  - Raman scattering
+  - gas temperature
+preferred-citation:
+  type: article
+  title: "Size of a hydrogen plasma controls methane conversion in its afterglow"
+  authors:
+    - family-names: Ruijzendaal
+      given-names: M. D.
+      orcid: "https://orcid.org/0009-0008-1124-1420"
+    - family-names: Azevedo
+      given-names: M. L.
+    - family-names: Vargas
+      given-names: J.
+    - family-names: Arboleda Rodallega
+      given-names: M.
+    - family-names: Butterworth
+      given-names: T. D.
+    - family-names: van Rooij
+      given-names: G. J.
+    - family-names: Diomede
+      given-names: P.
+    - family-names: den Harder
+      given-names: N.
+  year: 2026
+  status: in-preparation
+  # journal: add the journal after submission
+  # doi: add the article DOI after publication

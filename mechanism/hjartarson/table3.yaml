@@ -1,0 +1,37 @@
+description: |-
+  Table 3 reactions (R26-R33) from:
+
+  A T Hjartarson, E G Thorsteinsson and J T Gudmundsson, "Low pressure hydrogen
+  discharges diluted with argon explored using a global model," Plasma Sources
+  Sci. Technol. 19 (2010) 065008. doi:10.1088/0963-0252/19/6/065008
+
+  Reactions involving both hydrogen and argon species. All rate coefficients in
+  this table are given in the paper as plain numbers (no electron- or
+  gas-temperature dependence), so they are implemented as ordinary
+  constant-rate Arrhenius reactions (b = 0, Ea = 0), converted from the
+  paper's particle-based m^3/s to Cantera's molar cm^3/mol/s:
+
+    A' = A_paper * 1e6 [cm^3/m^3] * N_A [1/mol]
+
+  Bracketed numbers in trailing comments are the original references [N] from
+  table 3 of the paper (its own reference list, not this file's).
+
+units: { length: cm, time: s, quantity: mol, activation-energy: eV }
+
+reactions:
+  - equation: H2+ + Ar => H + ArH+  # (R26) [39]
+    rate-constant: {A: 1.385092e+15 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: H3+ + Ar => H2 + ArH+  # (R27) [53]
+    rate-constant: {A: 6.022141e+12 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: H2 + Ar+ => H + ArH+  # (R28) [53]
+    rate-constant: {A: 4.456384e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: e + ArH+ => H + Ar  # (R29) [54]
+    rate-constant: {A: 6.022141e+16 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: H- + ArH+ => H2 + Ar  # (R30) [55]
+    rate-constant: {A: 3.011070e+18 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: H2 + Ar+ => H2+ + Ar  # (R31) [56]
+    rate-constant: {A: 1.264650e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: H2 + ArH+ => H3+ + Ar  # (R32) [54]
+    rate-constant: {A: 9.033211e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: H2+ + Ar => H2 + Ar+  # (R33) [54]
+    rate-constant: {A: 1.324871e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}

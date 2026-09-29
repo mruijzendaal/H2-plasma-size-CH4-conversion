@@ -1,0 +1,28 @@
+{
+  "title": "Data and code for: Size of a hydrogen plasma controls methane conversion in its afterglow",
+  "upload_type": "dataset",
+  "description": "<p>Measurement data (0D and 2D Raman gas temperature and H2 dissociation measurements, gas chromatography results), plasma chemistry model results and the code to reproduce all figures of: M.D. Ruijzendaal, M.L. Azevedo, J. Vargas, M. Arboleda Rodallega, T.D. Butterworth, G.J. van Rooij, P. Diomede and N. den Harder, \"Size of a hydrogen plasma controls methane conversion in its afterglow\" (in preparation).</p><p>Code: MIT license. Data: CC BY 4.0.</p>",
+  "creators": [
+    {
+      "name": "Ruijzendaal, Martijn Daan",
+      "affiliation": "Maastricht University",
+      "orcid": "0009-0008-1124-1420"
+    }
+  ],
+  "license": "mit-license",
+  "keywords": [
+    "methane conversion",
+    "hydrogen plasma",
+    "microwave plasma",
+    "argon dilution",
+    "Raman scattering",
+    "gas temperature"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/mruijzendaal/H2-plasma-size-CH4-conversion",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

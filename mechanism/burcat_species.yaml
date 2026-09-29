@@ -1,0 +1,86 @@
+description: |-
+  Thermodynamic data of H3+, ArH+ and ArH from the Burcat database (A. Burcat and
+  B. Ruscic, Third Millennium Ideal Gas and Condensed Phase Thermochemical Database for
+  Combustion, http://garfield.chem.elte.hu/Burcat/burcat.html), as converted to Cantera
+  YAML in collomech (https://github.com/Brightsite-Plasmalab/collomech).
+
+species:
+- name: H3+
+  composition:
+    E: -1
+    H: 3
+  thermo:
+    model: NASA7
+    temperature-ranges:
+    - 298.15
+    - 1000.0
+    - 6000.0
+    data:
+    - - 4.1795698
+      - -0.000868875627
+      - -1.09017371e-07
+      - 4.13349766e-09
+      - -2.37877027e-12
+      - 132635.537
+      - -5.838001
+    - - 2.01435718
+      - 0.00415925769
+      - -1.42664877e-06
+      - 2.22372739e-10
+      - -1.29346518e-14
+      - 133230.507
+      - 5.46168967
+  note: TRIHYDROGENT6/11
+- name: ArH
+  composition:
+    Ar: 1
+    H: 1
+  thermo:
+    model: NASA7
+    temperature-ranges:
+    - 200.0
+    - 1000.0
+    - 6000.0
+    data:
+    - - 4.41410992
+      - 0.00320961982
+      - -1.14374282e-06
+      - 1.1366898e-09
+      - -4.12390169e-13
+      - 24017.1247
+      - 2.20200418
+    - - 4.49587046
+      - 0.00270989159
+      - -1.76156276e-09
+      - 3.05241459e-13
+      - -1.91785069e-17
+      - 24006.1898
+      - 1.84166206
+  note: RadicalT11/15
+- name: ArH+
+  composition:
+    Ar: 1
+    E: -1
+    H: 1
+  thermo:
+    model: NASA7
+    temperature-ranges:
+    - 298.15
+    - 1000.0
+    - 6000.0
+    data:
+    - - 3.57003961
+      - -0.00034543699
+      - 1.72046662e-08
+      - 1.461602e-09
+      - -8.64845666e-13
+      - 139088.864
+      - 2.41890043
+    - - 2.84790859
+      - 0.0014071576
+      - -4.88979896e-07
+      - 7.70013804e-11
+      - -4.52405649e-15
+      - 139277.512
+      - 6.15415562
+  note: cationT4/15

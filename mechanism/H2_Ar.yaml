@@ -1,0 +1,100 @@
+description: |-
+  Global (volume-averaged) H2/Ar discharge model of:
+
+  A T Hjartarson, E G Thorsteinsson and J T Gudmundsson, "Low pressure hydrogen
+  discharges diluted with argon explored using a global model," Plasma Sources
+  Sci. Technol. 19 (2010) 065008. doi:10.1088/0963-0252/19/6/065008
+
+  Combines the reaction sets of tables 2-5 (table2.yaml - table4.yaml,
+  table5.yaml) with species thermo drawn from Cantera's bundled nasa_gas.yaml
+  database wherever available. table5.yaml is currently empty (see its
+  description) because the paper does not tabulate rate coefficients for the
+  vibrationally resolved reactions -- only table 2-4 reactions are active here.
+
+  Five species used by the model are not in nasa_gas.yaml and are defined
+  below with approximate placeholder thermo (constant ideal-gas cp, NASA7
+  form), since all of tables 2-4 are written as irreversible ("=>") reactions
+  and do not require accurate reverse-rate thermochemistry:
+
+    - Arm, Arr, Ar(4p): lumped argon excited-state manifolds (metastable
+      1s5+1s3, radiative 1s4+1s2, and all 4p levels, respectively). Enthalpy
+      offsets from ground-state Ar use the model's own excitation thresholds
+      (reactions R4, R5, R6 in table2.yaml: 11.72, 12.12, 14.24 eV), following
+      the same offset convention as ../Ar_thermo.yaml.
+    - H3+, ArH+: enthalpy offsets estimated from gas-phase proton affinities
+      (PA(H2) = 422 kJ/mol, PA(Ar) = 369.2 kJ/mol) applied to the ion-convention
+      formation enthalpy of H+ used by nasa_gas.yaml, i.e.
+      dHf(H3+) = dHf(H+) - PA(H2), dHf(ArH+) = dHf(H+) - PA(Ar).
+
+cantera-version: 3.2.0
+
+units: { length: cm, time: s, quantity: mol, activation-energy: eV }
+
+phases:
+  - name: h2arplasma
+    thermo: plasma
+    elements: [H, Ar, E]
+    species:
+      - species: all
+      - nasa_gas.yaml/species: [Ar, Ar+, H, H+, H2, H2+, H-]
+      - burcat_species.yaml/species: [H3+, ArH+, ArH]
+      - kemaneci/table3.yaml/species: [Ar2+]
+    kinetics: gas
+    skip-undeclared-elements: true
+    skip-undeclared-third-bodies: true
+    reactions:
+      # - gri30.yaml/reactions: declared-species
+      - DLR_3.yaml/reactions: declared-species # Wang et al. 2025; replaced by gri30.yaml if absent, see README.md
+      - kemaneci/table3.yaml/reactions: declared-species # High-pressure argon reactions
+      - hjartarson/table3.yaml/reactions: declared-species
+      - hjartarson/table4.yaml/reactions: declared-species
+      - togai2016_H_plasma.yaml/reactions: declared-species
+    state: { T: 500.0, P: 1.333 Pa }  # 10 mTorr
+    electron-energy-distribution:
+      type: isotropic
+      shape-factor: 1.0
+      mean-electron-energy: 3.0 eV
+      energy-levels:
+        [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
+         13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 22.0, 24.0, 26.0,
+         28.0, 30.0]
+
+species:
+  - name: e
+    composition: { E: 1 }
+    thermo:
+      model: NASA7
+      temperature-ranges: [200.0, 6000.0]
+      data:
+        - [2.5, 0.0, 0.0, 0.0, 0.0, -745.375, -11.7246902]
+      note: gas L10/92
+
+  - name: Arm
+    composition: { Ar: 1 }
+    thermo:
+      model: NASA7
+      temperature-ranges: [200.0, 1000.0, 6000.0]
+      data:
+        - [2.50000000e+00, 0.0, 0.0, 0.0, 0.0, 1.35259577e+05, 4.37967491e+00]
+        - [2.50000000e+00, 0.0, 0.0, 0.0, 0.0, 1.35259577e+05, 4.37967491e+00]
+      note: Lumped Ar(1s5)+Ar(1s3) metastable manifold. Offset from nasa_gas.yaml Ar by 11.72 eV (table2.yaml R4 threshold).
+
+  - name: Arr
+    composition: { Ar: 1 }
+    thermo:
+      model: NASA7
+      temperature-ranges: [200.0, 1000.0, 6000.0]
+      data:
+        - [2.50000000e+00, 0.0, 0.0, 0.0, 0.0, 1.39901385e+05, 4.37967491e+00]
+        - [2.50000000e+00, 0.0, 0.0, 0.0, 0.0, 1.39901385e+05, 4.37967491e+00]
+      note: Lumped Ar(1s4)+Ar(1s2) radiatively coupled manifold. Offset from nasa_gas.yaml Ar by 12.12 eV (table2.yaml R5 threshold).
+
+  - name: Ar(4p)
+    composition: { Ar: 1 }
+    thermo:
+      model: NASA7
+      temperature-ranges: [200.0, 1000.0, 6000.0]
+      data:
+        - [2.50000000e+00, 0.0, 0.0, 0.0, 0.0, 1.64502963e+05, 4.37967491e+00]
+        - [2.50000000e+00, 0.0, 0.0, 0.0, 0.0, 1.64502963e+05, 4.37967491e+00]
+      note: Lumped Ar 4p manifold. Offset from nasa_gas.yaml Ar by 14.24 eV (table2.yaml R6 threshold).

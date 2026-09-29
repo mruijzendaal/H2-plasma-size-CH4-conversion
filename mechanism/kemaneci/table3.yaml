@@ -1,0 +1,213 @@
+description: |-
+  Table III reactions from:
+
+  E Kemaneci, F Mitschker, M Rudolph, D Szeremley, D Eremin, P Awakowicz and
+  R P Brinkmann, "A global model of cylindrical and coaxial surface-wave
+  discharges," arXiv:1612.07268 [physics.plasm-ph] (2016).
+
+  "Argon plasma reactions. We adopt the chemical set by Gudmundsson et al [50]
+  and additionally include the argon excimer ion kinetics as well as
+  three-body recombination by Jimenez et al [12] or Kabouzi et al [51]." The
+  base chemical set (reactions #1-26) is the same lumped 4-level argon model
+  (Ar, Arm, Arr, Ar(4p)) used in ../hjartarson/table2.yaml (Gudmundsson and
+  Thorsteinsson 2007), refit with slightly different coefficients in this
+  paper; species names here follow the same convention (Arm = lumped
+  metastable 1s5+1s3, Arr = lumped radiatively-coupled 1s4+1s2, Ar(4p) =
+  lumped 4p manifold) so that this table can be combined with
+  ../hjartarson/main.yaml's species if desired. Reactions #27-33 add the
+  argon dimer ion Ar2+ (excimer ion) kinetics; Ar2+ is not defined in this
+  reactions-only file (see note below).
+
+  Unit conversion methodology (rate coefficients, electron/gas temperatures):
+  the paper's header states rate coefficients are in m^3 s^-1 (m^6 s^-1 for
+  the explicit three-body reactions #30, #32, #33) and, unless a bracketed
+  unit tag says otherwise, electron temperature Te is in eV and gas/heavy-
+  particle temperature Th is in K.
+
+    - Two-body reactions fitted as A * Te[eV]^b * exp(-Ea[eV]/Te[eV])
+      (reactions #1-10, #15-18, #20, #22) are implemented with Cantera's
+      "two-temperature-plasma" rate type and Ea-gas = Ea-electron = Ea, which
+      makes the gas-temperature dependence cancel exactly (see
+      ../hjartarson/table2.yaml for the full derivation). Because Cantera's
+      Te enters the power-law term in kelvin rather than eV, the
+      pre-exponential factor also picks up a kB_eV^b correction, kB_eV =
+      8.617333262e-5 eV/K, on top of the usual particle -> molar conversion
+      (x 1e6 cm^3/m^3 x N_A).
+    - Reactions given as plain numbers (no Te dependence: #9, #11-14, #19,
+      #21) are implemented as constant-rate Arrhenius reactions (b=0, Ea=0).
+    - Reactions #23-26 are unimolecular radiative decays, in s^-1 directly
+      (no conversion needed for a first-order rate constant).
+    - Reactions #27, #28 are fit as A * (Te[K]/300)^-0.67 * f(Th), where
+      f(Th) = (1 - exp(-418/Th)) / (1 - 0.31*exp(-418/Th)) is a branching
+      fraction between the Arm and Arr channels of Ar2+ dissociative
+      recombination (Kabouzi et al). Because Te is explicitly in kelvin here,
+      it maps onto Cantera's native Te[K] directly with NO kB_eV correction;
+      but f(Th) is not representable by Cantera's built-in rate expressions,
+      so it is evaluated once at a fixed reference gas temperature Th_ref =
+      500 K (matching the default Tg used throughout ../hjartarson/) and
+      folded into the pre-exponential factor as a constant. f(500 K) =
+      0.65450. If you run at a substantially different gas temperature,
+      recompute A = 1.04e-12 * 300^0.67 * f(Th) * 1e6 * N_A.
+    - Reaction #29 is fit as A * exp(-(2.94 - 3*(Th[eV]-0.026))/Te[eV]), i.e.
+      an activation energy that is itself linear in Th. It is likewise
+      evaluated at the fixed reference Th_ref = 500 K (Th[eV] = 0.043087 eV),
+      giving Ea_eff = 2.88874 eV, and implemented as an ordinary
+      two-temperature-plasma reaction (b=0) with that fixed Ea.
+    - Reaction #30 is a three-body reaction fit as A * (Th[K]/300)^-0.4 using
+      the real gas temperature natively in kelvin, so it needs no eV
+      correction; implemented as a plain (gas-temperature) Arrhenius
+      reaction with cm^6/mol^2/s units.
+    - Reaction #31 is a two-body, heavy-particle-only reaction fit as
+      A * Th[eV]^-1.0 * exp(-1.304/Th[eV]) -- both terms use Th in eV, so it
+      needs the same kB_eV^b pre-factor correction as the Te[eV]-based
+      reactions above, but applied with Cantera's plain (gas-temperature)
+      Arrhenius rate type since no electron is involved.
+    - Reactions #32, #33 are three-body electron-ion recombination, fit as
+      A * Te[eV]^b with no exponential term; implemented as
+      two-temperature-plasma with cm^6/mol^2/s units and the same kB_eV^b
+      correction (very large here because b is large and negative:
+      -4.5 and -2.25).
+
+  All conversion formulas above were verified by loading the resulting
+  reactions in Cantera 3.2.0 and confirming k(Te, Tg) reproduces the paper's
+  formulas to 6 significant figures over Te = 1-5 eV at Tg = 500 K.
+
+  Notes on specific reactions:
+    - #2/#3 and #4/#5 are two separate literature cross sections that both
+      feed the same lumped Arm / Arr state; both are kept (marked
+      `duplicate: true`) so their rates add, rather than overwriting one
+      another.
+    - #12 is printed in the paper as "Ar + Ar+ -> Ar + Ar+" with a "?"
+      annotation next to the reaction number; reactants and products are
+      identical, so it has no net effect on species densities. It is most
+      likely the resonant charge-exchange collision used elsewhere in the
+      paper to compute the ion mean free path / mobility, not a true
+      production/loss channel, but it is included here as printed for
+      completeness.
+    - #14 is printed twice under the same reaction number for two different
+      reactions (Ar(4p)+Ar(4p) and Arm+Arm associative ionization); both are
+      kept and labeled #14a / #14b in the trailing comments.
+    - Ar2+ (argon dimer/excimer cation) is used as a reactant/product in
+      reactions #27-31 but is not defined in this reactions-only file. Add a
+      NASA7 (or other) thermo entry for it, e.g. alongside Arm/Arr/Ar(4p) in
+      ../hjartarson/main.yaml, before combining this table into a runnable
+      phase.
+
+units: { length: cm, time: s, quantity: mol, activation-energy: eV }
+
+reactions:
+  - equation: e + Ar => Ar+ + e + e  # (1) [56]
+    type: two-temperature-plasma
+    rate-constant: {A: 5.537946e+13 cm^3/mol/s, b: 0.590, Ea-gas: 17.440 eV, Ea-electron: 17.440 eV}
+  - equation: e + Ar => e + Arm  # (2) [57], channel a into lumped Arm (see also #3)
+    type: two-temperature-plasma
+    duplicate: true
+    rate-constant: {A: 3.011070e+15 cm^3/mol/s, b: 0.0, Ea-gas: 12.640 eV, Ea-electron: 12.640 eV}
+  - equation: e + Ar => e + Arm  # (3) [57], channel b into lumped Arm (see also #2)
+    type: two-temperature-plasma
+    duplicate: true
+    rate-constant: {A: 8.430997e+14 cm^3/mol/s, b: 0.0, Ea-gas: 12.420 eV, Ea-electron: 12.420 eV}
+  - equation: e + Ar => e + Arr  # (4) [57], channel a into lumped Arr (see also #5)
+    type: two-temperature-plasma
+    duplicate: true
+    rate-constant: {A: 1.144207e+15 cm^3/mol/s, b: 0.0, Ea-gas: 12.600 eV, Ea-electron: 12.600 eV}
+  - equation: e + Ar => e + Arr  # (5) [57], channel b into lumped Arr (see also #4)
+    type: two-temperature-plasma
+    duplicate: true
+    rate-constant: {A: 1.625978e+14 cm^3/mol/s, b: 0.0, Ea-gas: 12.140 eV, Ea-electron: 12.140 eV}
+  - equation: e + Ar => e + Ar(4p)  # (6) [58]
+    type: two-temperature-plasma
+    rate-constant: {A: 1.264650e+16 cm^3/mol/s, b: 0.0, Ea-gas: 13.130 eV, Ea-electron: 13.130 eV}
+  - equation: e + Arm => e + Ar  # (7) [59]
+    type: two-temperature-plasma
+    rate-constant: {A: 2.543287e+11 cm^3/mol/s, b: 0.740, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: e + Arm => Ar+ + e + e  # (8) [60]
+    type: two-temperature-plasma
+    rate-constant: {A: 7.743898e+12 cm^3/mol/s, b: 0.670, Ea-gas: 4.200 eV, Ea-electron: 4.200 eV}
+  - equation: e + Arm => e + Arr  # (9) [61]
+    rate-constant: {A: 2.228192e+17 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: e + Arm => e + Ar(4p)  # (10) [60]
+    type: two-temperature-plasma
+    rate-constant: {A: 4.530865e+15 cm^3/mol/s, b: 0.510, Ea-gas: 1.590 eV, Ea-electron: 1.590 eV}
+  - equation: 2 Arm => 2 Ar  # (11)
+    rate-constant: {A: 1.204428e+17 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  # - equation: Ar + Ar+ => Ar + Ar+  # (12?) [62], null reaction as printed - see note above
+  #   rate-constant: {A: 1.324871e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: Arm + Arr => Ar + Ar+ + e  # (13) [63]
+    rate-constant: {A: 1.264650e+15 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: Ar(4p) + Ar(4p) => Ar + Ar+ + e  # (14a) [60]
+    rate-constant: {A: 3.011070e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: 2 Arm => Ar + Ar+ + e  # (14b) [61]
+    rate-constant: {A: 3.854170e+14 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: e + Ar(4p) => Ar+ + e + e  # (15) [60]
+    type: two-temperature-plasma
+    rate-constant: {A: 3.594189e+14 cm^3/mol/s, b: 0.610, Ea-gas: 2.610 eV, Ea-electron: 2.610 eV}
+  - equation: e + Ar(4p) => e + Arr  # (16) [59]
+    type: two-temperature-plasma
+    rate-constant: {A: 1.527258e+15 cm^3/mol/s, b: 0.510, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: e + Ar(4p) => e + Arm  # (17) [59]
+    type: two-temperature-plasma
+    rate-constant: {A: 1.527258e+15 cm^3/mol/s, b: 0.510, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: e + Ar(4p) => e + Ar  # (18) [59]
+    type: two-temperature-plasma
+    rate-constant: {A: 3.054431e+11 cm^3/mol/s, b: 0.710, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: Ar + Arm => 2 Ar  # (19) [63]
+    rate-constant: {A: 1.264650e+09 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: e + Arr => e + Ar  # (20) [59]
+    type: two-temperature-plasma
+    rate-constant: {A: 2.543287e+11 cm^3/mol/s, b: 0.740, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: e + Arr => e + Arm  # (21) [61]
+    rate-constant: {A: 5.480148e+17 cm^3/mol/s, b: 0.0, Ea: 0.0 eV}
+  - equation: e + Arr => e + Ar(4p)  # (22) [60]
+    type: two-temperature-plasma
+    rate-constant: {A: 4.530865e+15 cm^3/mol/s, b: 0.510, Ea-gas: 1.590 eV, Ea-electron: 1.590 eV}
+  - equation: Arr => Ar  # (23) radiative decay [64]
+    rate-constant: {A: 1.000000e+05 1/s, b: 0.0, Ea: 0.0 eV}
+  - equation: Ar(4p) => Ar  # (24) radiative decay [59]
+    rate-constant: {A: 3.200000e+07 1/s, b: 0.0, Ea: 0.0 eV}
+  - equation: Ar(4p) => Arm  # (25) radiative decay [65]
+    rate-constant: {A: 3.000000e+07 1/s, b: 0.0, Ea: 0.0 eV}
+  - equation: Ar(4p) => Arr  # (26) radiative decay [65]
+    rate-constant: {A: 3.000000e+07 1/s, b: 0.0, Ea: 0.0 eV}
+  - equation: Ar2+ + e => Ar + Arm  # (27) [51], Th branching factor frozen at 500 K - see note above
+    type: two-temperature-plasma
+    rate-constant: {A: 1.872263e+19 cm^3/mol/s, b: -0.670, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: Ar2+ + e => Ar + Arr  # (28) [51], Th branching factor frozen at 500 K - see note above
+    type: two-temperature-plasma
+    rate-constant: {A: 1.872263e+19 cm^3/mol/s, b: -0.670, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: Ar2+ + e => Ar+ + Ar + e  # (29) [51], Th-dependent Ea frozen at Th=500 K (Ea_eff=2.88874 eV) - see note above
+    type: two-temperature-plasma
+    rate-constant: {A: 6.684576e+17 cm^3/mol/s, b: 0.0, Ea-gas: 2.88874 eV, Ea-electron: 2.88874 eV}
+  - equation: 2 Ar + Ar+ => Ar2+ + Ar  # (30) [51], three-body, real gas temperature Th[K]
+    rate-constant: {A: 7.989743e+17 cm^6/mol^2/s, b: -0.400, Ea: 0.0 eV}
+  - equation: Ar2+ + Ar => Ar+ + 2 Ar  # (31) [51], real gas temperature Th, fit in Th[eV]
+    rate-constant: {A: 3.647947e+18 cm^3/mol/s, b: -1.000, Ea: 1.304 eV}
+  - equation: Ar+ + e + e => Ar(4p) + e  # (32) [66], three-body electron-ion recombination
+    type: two-temperature-plasma
+    rate-constant: {A: 3.542369e+39 cm^6/mol^2/s, b: -4.500, Ea-gas: 0.0, Ea-electron: 0.0}
+  - equation: Ar+ + e + e => Ar + e  # (33) [67], three-body electron-ion recombination
+    type: two-temperature-plasma
+    rate-constant: {A: 4.435278e+30 cm^6/mol^2/s, b: -2.250, Ea-gas: 0.0, Ea-electron: 0.0}
+
+species:
+  # Argon dimer ion. Enthalpy is anchored to nasa_gas.yaml's Ar+ and Ar:
+  #   Hf(Ar2+) = Hf(Ar+) + Hf(Ar) - D0,  D0 = 1.32 eV [VMI]
+  # which puts Ar2+ 14.504 eV above two ground-state Ar atoms. (nasa_gas.yaml's
+  # own Ar+/Ar pair implies IP = 15.824 eV, 0.064 eV above the spectroscopic
+  # 15.7596 eV; the offset is inherited here so the mechanism stays internally
+  # consistent.)
+  # cp = 3.5 R -- translation + rotation only, rigid rotor, vibration neglected
+  # (omega_e ~ 309 cm^-1, so this underestimates cp above ~1000 K).
+  # a7 is set from Sackur-Tetrode + rigid rotor (re = 2.42 A, sigma = 2) plus
+  # R ln 2 for the X 2Sigma_u+ doublet, giving S(298) = 232.1 J/mol/K.
+  # As in main.yaml this thermo is a placeholder: every reaction above is
+  # irreversible, so no reverse rate is ever derived from it. It is accurate
+  # enough for the energy balance, NOT for equilibrium calculations.
+  - name: Ar2+
+    composition: { Ar: 2, E: -1 }
+    thermo:
+      model: NASA7
+      temperature-ranges: [200.0, 6000.0]
+      data:
+        - [3.5, 0.0, 0.0, 0.0, 0.0, 1.67266697e+05, 7.97958798e+00]
+      note: Ar2+ placeholder, Hf from Hf(Ar+) - D0(Ar2+); see comment above.
