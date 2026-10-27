@@ -19,11 +19,24 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run
 uv run reproduce.py
 ```
 
-This installs Python 3.13 and the exact package versions in `uv.lock` into a local `.venv`, and
-writes all figures to `output/` (about 30 s).
+uv installs Python 3.13 and the exact package versions in `uv.lock` into a local `.venv`, so the
+results do not depend on what is already installed on your machine. Figures are written to
+`output/` (about 30 s).
+
+Without uv, use Python 3.13 and a virtual environment:
+
+```bash
+python3.13 -m venv .venv
+source .venv/bin/activate    # Windows: .venv\Scripts\activate
+pip install .
+python reproduce.py
+```
+
+This installs the pinned direct dependencies from `pyproject.toml`, but not the exact versions of
+indirect ones.
 
 To work with the scripts interactively, open them in VS Code: the `# %%` markers make them run
-cell by cell, like a notebook. Select the `.venv` interpreter after running `uv sync`.
+cell by cell, like a notebook. Select the `.venv` interpreter.
 
 ## Contents
 
