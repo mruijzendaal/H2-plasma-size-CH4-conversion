@@ -2,6 +2,7 @@
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC%20BY%204.0-lightgrey.svg)](data/LICENSE)
 [![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1124--1420-A6CE39?style=flat&logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1124-1420)
+[![DOI](https://zenodo.org/badge/1395328949.svg)](https://doi.org/10.5281/zenodo.24524168)
 
 # Size of a hydrogen plasma controls methane conversion in its afterglow
 
